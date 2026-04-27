@@ -3,11 +3,13 @@
   import { usePollStore } from '@/stores/usePollStore';
 
   const props = defineProps({
-    polls: { type: Array, default: () => [] },
     loginUrl: { type: String, default: null },
     username: { type: String, default: null },
+    polls: { type: Array, default: () => [] },
   });
 
+  console.log('props.polls', props.polls);
+  
   const { setPolls } = usePollStore();
   setPolls(props.polls);
 </script>

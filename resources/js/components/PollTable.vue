@@ -3,6 +3,12 @@
 
   const { polls, deletePoll } = usePollStore();
 
+  function getStatus(poll) {
+    if (poll.is_draft) return { label: 'Brouillon', class: 'text-gray-500' };
+    if (poll.ends_at && new Date(poll.ends_at) < new Date()) return { label: 'Expiré', class: 'text-red-500' };
+    return { label: 'Actif', class: 'text-green-500' };
+  }
+
   async function delPoll(id) {
     console.log('delete Poll ID:', id);
     await deletePoll(id);
@@ -19,7 +25,7 @@
         <th class="border px-3 py-2">ID</th>
         <th class="border px-3 py-2">Titre</th>
         <th class="border px-3 py-2">Question</th>
-        <th class="border px-3 py-2">Brouillon</th>
+        <th class="border px-3 py-2">Statut</th>
         <th class="border px-3 py-2">Debut</th>
         <th class="border px-3 py-2">Fin</th>
       </tr>
@@ -30,7 +36,7 @@
         <td class="border px-3 py-2">{{ poll.id }}</td>
         <td class="border px-3 py-2">{{ poll.title || '-' }}</td>
         <td class="border px-3 py-2">{{ poll.question }}</td>
-        <td class="border px-3 py-2">{{ poll.is_draft ? 'Oui' : 'Non' }}</td>
+        <td class="border px-3 py-2" :class="getStatus(poll).class">{{ getStatus(poll).label }}</td>
         <td class="border px-3 py-2">{{ poll.started_at || '-' }}</td>
         <td class="border px-3 py-2">{{ poll.ends_at || '-' }}</td>
       </tr>
