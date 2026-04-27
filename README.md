@@ -30,13 +30,7 @@ Voici les pré-requis nécessaires :
 
 Pour développer et tester le mini-projet en local, voici les étapes à suivre :
 
-1. Cloner ce dépôt sur votre machine locale :
-
-    ```bash
-    git clone git@github.com:heig-vd-devprodmed-course/heig-vd-devprodmed-mini-projet.git
-
-    cd heig-vd-devprodmed-mini-projet
-    ```
+1. Forker ce dépôt
 
 2. Installer les dépendances avec npm et Composer :
 
