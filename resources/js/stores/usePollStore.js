@@ -46,5 +46,50 @@ export function usePollStore() {
     }
   }
 
-  return { polls, error, setPolls, createPoll, updatePoll, deletePoll };
+  async function addOption(pollId, label) {
+    error.value = null;
+    try {
+      const result = await fetchApi({ url: 'polls/' + pollId + '/options', method: 'POST', data: { label } });
+      const poll = polls.value.find(p => p.id === pollId);
+      if (poll) {
+        if (!poll.options) poll.options = [];
+        poll.options.push(result);
+      }
+      return result;
+    } catch (err) {
+      error.value = err;
+      return null;
+    }
+  }
+
+  async function updateOption(pollId, optionId, label) {
+    error.value = null;
+    try {
+      const result = await fetchApi({ url: 'polls/' + pollId + '/options/' + optionId, method: 'PATCH', data: { label } });
+      const poll = polls.value.find(p => p.id === pollId);
+      if (poll && poll.options) {
+        const index = poll.options.findIndex(o => o.id === optionId);
+        if (index !== -1) poll.options[index] = result;
+      }
+      return result;
+    } catch (err) {
+      error.value = err;
+      return null;
+    }
+  }
+
+  async function deleteOption(pollId, optionId) {
+    error.value = null;
+    try {
+      await fetchApi({ url: 'polls/' + pollId + '/options/' + optionId, method: 'DELETE' });
+      const poll = polls.value.find(p => p.id === pollId);
+      if (poll && poll.options) {
+        poll.options = poll.options.filter(o => o.id !== optionId);
+      }
+    } catch (err) {
+      error.value = err;
+    }
+  }
+
+  return { polls, error, setPolls, createPoll, updatePoll, deletePoll, addOption, updateOption, deleteOption };
 }
