@@ -32,6 +32,6 @@
 
     <a href="{{ url('/polls') }}"
         class="mt-3 block w-full px-4 py-2 bg-teal-600 dark:bg-purple-900 text-white rounded-md hover:bg-teal-700 dark:hover:bg-purple-800 text-center">
-        Voir les sondages →
+        Voir les sondages
     </a>
 </x-default-layout>

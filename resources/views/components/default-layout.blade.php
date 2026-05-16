@@ -22,27 +22,39 @@
 </head>
 
 <body class="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900">
-    <header class="bg-teal-600 text-white dark:bg-slate-800">
+    <header class="relative bg-teal-600 text-white dark:bg-slate-800">
         <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="h-16 flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <a href="{{ url('/') }}" class="block hover:opacity-80 transition">
+                    <a href="{{ url('/') }}" class="block hover:opacity-80 transition font-semibold">
                         {{ config('app.name') }}
                     </a>
-                    <a href="{{ url('/posts') }}"
-                        class="block bg-teal-700 dark:bg-purple-900 px-3 py-1 rounded-md hover:bg-teal-800 dark:hover:bg-purple-800">
-                        {{ __('ui.posts.index.title') }}
-                    </a>
-                    <a href="{{ url('/polls') }}"
-                        class="block bg-teal-700 dark:bg-purple-900 px-3 py-1 rounded-md hover:bg-teal-800 dark:hover:bg-purple-800">
-                        Sondages
-                    </a>
-                    @auth
-                        <a href="{{ url('/polls/dashboard') }}"
-                            class="block bg-teal-700 dark:bg-purple-900 px-3 py-1 rounded-md hover:bg-teal-800 dark:hover:bg-purple-800">
-                            Dashboard
+
+                    <!-- Bouton hamburger — mobile uniquement -->
+                    <button id="menu-toggle" class="md:hidden p-2 rounded text-white">
+                        ☰
+                    </button>
+
+                    <!-- Liens — cachés sur mobile, visibles sur md+ -->
+                    <div id="nav-links" class="hidden md:flex items-center gap-4">
+                        <a href="{{ url('/posts') }}"
+                           class="block bg-teal-700 dark:bg-purple-900 px-3 py-1 rounded-md
+                                  hover:bg-teal-800 dark:hover:bg-purple-800 text-white text-sm">
+                            {{ __('ui.posts.index.title') }}
                         </a>
-                    @endauth
+                        <a href="{{ url('/polls') }}"
+                           class="block bg-teal-700 dark:bg-purple-900 px-3 py-1 rounded-md
+                                  hover:bg-teal-800 dark:hover:bg-purple-800 text-white text-sm">
+                            Sondages
+                        </a>
+                        @auth
+                            <a href="{{ url('/polls/dashboard') }}"
+                               class="block bg-teal-700 dark:bg-purple-900 px-3 py-1 rounded-md
+                                      hover:bg-teal-800 dark:hover:bg-purple-800 text-white text-sm">
+                                Dashboard
+                            </a>
+                        @endauth
+                    </div>
                 </div>
 
                 @auth
@@ -71,6 +83,26 @@
                 @endauth
             </div>
         </nav>
+
+        <!-- Menu mobile déplié -->
+        <div id="mobile-menu"
+             class="hidden md:hidden absolute top-full left-0 right-0 z-50
+                    bg-gray-900 flex flex-col gap-2 p-4">
+            <a href="{{ url('/posts') }}"
+               class="bg-teal-700 dark:bg-purple-900 px-3 py-2 rounded-md text-white text-sm">
+                {{ __('ui.posts.index.title') }}
+            </a>
+            <a href="{{ url('/polls') }}"
+               class="bg-teal-700 dark:bg-purple-900 px-3 py-2 rounded-md text-white text-sm">
+                Sondages
+            </a>
+            @auth
+                <a href="{{ url('/polls/dashboard') }}"
+                   class="bg-teal-700 dark:bg-purple-900 px-3 py-2 rounded-md text-white text-sm">
+                    Dashboard
+                </a>
+            @endauth
+        </div>
     </header>
 
     <main class="container mx-auto px-4 py-8 sm:px-6 lg:px-8 flex-grow dark:text-white max-w-2xl">
@@ -89,6 +121,12 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        document.getElementById('menu-toggle').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+    </script>
 </body>
 
 </html>

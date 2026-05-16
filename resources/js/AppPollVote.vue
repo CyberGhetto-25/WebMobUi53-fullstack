@@ -245,14 +245,22 @@ async function handleVote() {
 .option-label {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
   color: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 0.5rem;
 }
 .option-label:hover {
   background: rgba(255, 255, 255, 0.08);
+}
+input[type="radio"],
+input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
 }
 .error {
   color: #e3342f;
@@ -260,9 +268,10 @@ async function handleVote() {
   margin-bottom: 0.75rem;
 }
 .btn-vote {
+  width: 100%;
   background-color: #4a1d96;
   color: white;
-  padding: 0.5rem 1.25rem;
+  padding: 0.75rem;
   border: none;
   border-radius: 0.375rem;
   cursor: pointer;

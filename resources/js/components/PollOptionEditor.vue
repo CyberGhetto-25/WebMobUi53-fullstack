@@ -1,5 +1,6 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
+import { Save, Trash2 } from 'lucide-vue-next';
 import { usePollStore } from '@/stores/usePollStore';
 import { useFetchApi } from '@/composables/useFetchApi';
 
@@ -25,7 +26,6 @@ onMounted(async () => {
     localOptions.value.forEach(o => { localLabels[o.id] = o.label; });
     showWarning.value = localOptions.value.length < 2;
   } catch {
-    // fallback sur les options de la prop
     localOptions.value = [...(props.poll.options ?? [])];
     localOptions.value.forEach(o => { localLabels[o.id] = o.label; });
   }
@@ -89,8 +89,12 @@ async function handleDelete(optionId) {
     <ul v-else>
       <li v-for="option in localOptions" :key="option.id" class="option-row">
         <input v-model="localLabels[option.id]" type="text" class="option-input" />
-        <button class="btn-save" :disabled="loading" @click="handleUpdate(option.id)">Sauvegarder</button>
-        <button class="btn-delete" :disabled="loading" @click="handleDelete(option.id)">Supprimer</button>
+        <button class="btn-save" :disabled="loading" @click="handleUpdate(option.id)" title="Sauvegarder">
+          <Save :size="16" />
+        </button>
+        <button class="btn-delete" :disabled="loading" @click="handleDelete(option.id)" title="Supprimer">
+          <Trash2 :size="16" />
+        </button>
         <span v-if="optionErrors[option.id]" class="field-error">{{ optionErrors[option.id] }}</span>
       </li>
     </ul>
@@ -127,7 +131,7 @@ ul {
   align-items: center;
   gap: 0.4rem;
   margin-bottom: 0.4rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 .add-row {
   display: flex;
@@ -135,6 +139,7 @@ ul {
 }
 .option-input {
   flex: 1;
+  min-width: 0;
   border: 1px solid #ccc;
   border-radius: 0.25rem;
   padding: 0.35rem 0.5rem;
@@ -145,7 +150,6 @@ ul {
   width: 100%;
 }
 button {
-  padding: 0.35rem 0.6rem;
   border: none;
   border-radius: 0.25rem;
   cursor: pointer;
@@ -155,6 +159,14 @@ button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+.btn-save,
+.btn-delete {
+  flex-shrink: 0;
+  padding: 0.35rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 .btn-save {
   background-color: #4a1d96;
   color: white;
@@ -162,6 +174,7 @@ button:disabled {
 .btn-add {
   background-color: #0f766e;
   color: white;
+  padding: 0.35rem 0.6rem;
 }
 .btn-delete {
   background-color: #e3342f;

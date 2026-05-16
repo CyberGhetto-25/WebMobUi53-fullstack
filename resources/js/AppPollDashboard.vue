@@ -37,7 +37,6 @@
 <template>
   <div class="dashboard">
     <div class="dashboard-header">
-      <a href="/" class="btn-home">← Accueil</a>
       <h1>Mes sondages</h1>
       <button v-if="view === 'list'" class="btn-new" @click="view = 'create'">
         <PlusCircle :size="16" /> Nouveau sondage
@@ -64,7 +63,7 @@
 <style scoped>
 .dashboard {
   width: 100%;
-  padding: 1.5rem;
+  padding: 1rem;
   box-sizing: border-box;
 }
 .dashboard-header {
@@ -78,14 +77,6 @@
   font-size: 1.25rem;
   font-weight: 700;
   flex: 1;
-}
-.btn-home {
-  color: #6b7280;
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-.btn-home:hover {
-  color: #a78bfa;
 }
 .btn-new {
   display: inline-flex;

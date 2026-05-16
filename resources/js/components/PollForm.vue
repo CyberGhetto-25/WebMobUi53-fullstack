@@ -178,10 +178,20 @@ textarea {
   color: #6b7280;
   font-size: 0.9rem;
 }
+form {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 1rem;
+}
 .actions {
   display: flex;
   gap: 0.5rem;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+.actions button {
+  flex: 1;
+  min-width: 120px;
 }
 button {
   padding: 0.4rem 0.8rem;

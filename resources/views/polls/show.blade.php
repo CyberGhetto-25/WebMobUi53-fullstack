@@ -8,7 +8,7 @@
     </x-slot>
 
     <div style="padding: 1rem;">
-      <a href="/polls" style="color: #a78bfa; text-decoration: none; font-size: 0.9rem;">← Retour aux sondages</a>
+      <a href="/polls" style="color: #a78bfa; text-decoration: none; font-size: 0.9rem;">Retour aux sondages</a>
     </div>
 
     <div

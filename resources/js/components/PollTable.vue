@@ -43,7 +43,8 @@
     Aucun sondage.
   </p>
 
-  <table v-else class="bg-white dark:bg-gray-800 w-full border-collapse text-left">
+  <div v-else class="table-wrapper">
+    <table class="bg-white dark:bg-gray-800 w-full border-collapse text-left">
     <thead>
       <tr>
         <th class="border border-gray-200 dark:border-gray-700 px-3 py-2 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-900">Actions</th>
@@ -79,7 +80,8 @@
         <td class="border border-gray-200 dark:border-gray-700 px-3 py-2 text-gray-900 dark:text-white">{{ formatDate(poll.ends_at) }}</td>
       </tr>
     </tbody>
-  </table>
+    </table>
+  </div>
 </template>
 
 <style scoped>
@@ -104,5 +106,10 @@
   .btn-delete {
     background-color: #e3342f;
     color: white;
+  }
+  @media (max-width: 640px) {
+    .table-wrapper {
+      overflow-x: auto;
+    }
   }
 </style>
