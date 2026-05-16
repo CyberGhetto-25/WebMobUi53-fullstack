@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { usePollStore } from '@/stores/usePollStore';
+import PollOptionEditor from './PollOptionEditor.vue';
 
 const props = defineProps({
   poll: { type: Object, default: null },
@@ -8,9 +9,14 @@ const props = defineProps({
 
 const emit = defineEmits(['saved', 'cancelled']);
 
-const { createPoll, updatePoll, error: storeError } = usePollStore();
+const { polls, createPoll, updatePoll, error: storeError } = usePollStore();
 
 const isEditMode = computed(() => props.poll !== null);
+
+const currentOptionsLength = computed(() => {
+  if (!isEditMode.value || !props.poll) return 0;
+  return polls.value.find(p => p.id === props.poll.id)?.options?.length ?? 0;
+});
 
 const title = ref(props.poll?.title ?? '');
 const question = ref(props.poll?.question ?? '');
@@ -92,6 +98,16 @@ async function handleSubmit() {
       <span v-if="fieldErrors.duration" class="field-error">{{ fieldErrors.duration[0] }}</span>
     </div>
 
+    <div class="section">
+      <h3 class="section-title">Options de réponse</h3>
+      <PollOptionEditor
+        v-if="isEditMode"
+        :poll="poll"
+        :key="currentOptionsLength"
+      />
+      <p v-else class="hint">Vous pourrez ajouter des options après avoir sauvegardé le sondage.</p>
+    </div>
+
     <div class="actions">
       <button type="button" @click="emit('cancelled')">Annuler</button>
       <button type="submit" :disabled="loading">
@@ -138,6 +154,20 @@ textarea {
 textarea {
   min-height: 4rem;
   resize: vertical;
+}
+.section {
+  margin-bottom: 1.25rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+.hint {
+  color: #6b7280;
+  font-size: 0.9rem;
 }
 .actions {
   display: flex;

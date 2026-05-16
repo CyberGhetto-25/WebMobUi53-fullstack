@@ -4,26 +4,45 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Poll;
+use App\Models\PollVote;
 use Illuminate\Http\Request;
 
 class ApiPollController extends Controller
 {
     public function index(Request $request)
     {
-        $polls = $request->user()->polls()->orderBy('created_at', 'desc')->get();
+        $polls = $request->user()->polls()->with('options')->orderBy('created_at', 'desc')->get();
 
         return $polls;
     }
 
-    public function show(string $token)
+    public function show(Request $request, string $token)
     {
         $poll = Poll::with(['options' => function ($query) {
             $query->withCount('votes');
         }])->where('secret_token', $token)->first();
 
-        if (!$poll) {
+        if (!$poll || $poll->is_draft) {
             return response()->json(['message' => 'Poll not found.'], 404);
         }
+
+        $user = auth('sanctum')->user();
+        $isOwner = $user && $user->id === $poll->user_id;
+
+        if (!$poll->results_public && !$isOwner) {
+            $poll->options->each(fn($option) => $option->makeHidden('votes_count'));
+        }
+
+        $userOptionIds = [];
+        if ($user) {
+            $userOptionIds = PollVote::where('poll_id', $poll->id)
+                ->where('user_id', $user->id)
+                ->pluck('poll_option_id')
+                ->toArray();
+        }
+
+        $poll->setAttribute('user_has_voted', !empty($userOptionIds));
+        $poll->setAttribute('user_option_ids', $userOptionIds);
 
         return $poll;
     }

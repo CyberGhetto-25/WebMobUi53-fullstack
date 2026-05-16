@@ -1,5 +1,5 @@
 <script setup>
-  import { ref } from 'vue';
+  import { ref, computed } from 'vue';
   import PollTable from './components/PollTable.vue';
   import PollForm from './components/PollForm.vue';
   import { usePollStore } from '@/stores/usePollStore';
@@ -10,24 +10,25 @@
     polls: { type: Array, default: () => [] },
   });
 
-  const { setPolls } = usePollStore();
+  const { polls, setPolls } = usePollStore();
   setPolls(props.polls);
 
   const view = ref('list');
-  const selectedPoll = ref(null);
+  const selectedPollId = ref(null);
+  const selectedPoll = computed(() => polls.value.find(p => p.id === selectedPollId.value) ?? null);
 
   function onEdit(poll) {
-    selectedPoll.value = poll;
+    selectedPollId.value = poll.id;
     view.value = 'edit';
   }
 
   function onSaved() {
-    selectedPoll.value = null;
+    selectedPollId.value = null;
     view.value = 'list';
   }
 
   function onCancelled() {
-    selectedPoll.value = null;
+    selectedPollId.value = null;
     view.value = 'list';
   }
 </script>
