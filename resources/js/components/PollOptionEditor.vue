@@ -1,25 +1,35 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { usePollStore } from '@/stores/usePollStore';
+import { useFetchApi } from '@/composables/useFetchApi';
 
 const props = defineProps({
   poll: { type: Object, required: true },
 });
 
 const { addOption, updateOption, deleteOption, error: storeError } = usePollStore();
+const { fetchApi } = useFetchApi();
 
-// Source de vérité locale — mise à jour directement après chaque opération
-const localOptions = ref([...(props.poll.options ?? [])]);
-const localLabels = reactive(
-  Object.fromEntries((props.poll.options ?? []).map(o => [o.id, o.label]))
-);
-
+const localOptions = ref([]);
+const localLabels = reactive({});
 const newLabel = ref('');
 const loading = ref(false);
 const addError = ref(null);
 const optionErrors = reactive({});
+const showWarning = ref(false);
 
-const showWarning = ref(localOptions.value.length < 2);
+onMounted(async () => {
+  try {
+    const poll = await fetchApi({ url: 'polls/' + props.poll.secret_token });
+    localOptions.value = poll.options ?? [];
+    localOptions.value.forEach(o => { localLabels[o.id] = o.label; });
+    showWarning.value = localOptions.value.length < 2;
+  } catch {
+    // fallback sur les options de la prop
+    localOptions.value = [...(props.poll.options ?? [])];
+    localOptions.value.forEach(o => { localLabels[o.id] = o.label; });
+  }
+});
 
 async function handleAdd() {
   if (!newLabel.value.trim()) return;
@@ -59,12 +69,10 @@ async function handleDelete(optionId) {
   loading.value = true;
   await deleteOption(props.poll.id, optionId);
   loading.value = false;
-  if (!storeError.value) {
-    localOptions.value = localOptions.value.filter(o => o.id !== optionId);
-    delete localLabels[optionId];
-    delete optionErrors[optionId];
-    showWarning.value = localOptions.value.length < 2;
-  }
+  localOptions.value = localOptions.value.filter(o => o.id !== optionId);
+  delete localLabels[optionId];
+  delete optionErrors[optionId];
+  showWarning.value = localOptions.value.length < 2;
 }
 </script>
 

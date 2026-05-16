@@ -71,11 +71,13 @@ export function usePollStore() {
     error.value = null;
     try {
       const result = await fetchApi({ url: 'polls/' + pollId + '/options/' + optionId, method: 'PATCH', data: { label } });
-      const poll = polls.value.find(p => p.id === pollId);
-      if (poll && poll.options) {
-        const index = poll.options.findIndex(o => o.id === optionId);
-        if (index !== -1) poll.options[index] = result;
-      }
+      polls.value = polls.value.map(p => {
+        if (p.id !== pollId) return p;
+        return {
+          ...p,
+          options: (p.options ?? []).map(o => o.id === optionId ? result : o),
+        };
+      });
       return result;
     } catch (err) {
       error.value = err;
@@ -87,8 +89,13 @@ export function usePollStore() {
     error.value = null;
     try {
       await fetchApi({ url: 'polls/' + pollId + '/options/' + optionId, method: 'DELETE' });
-      const fresh = await fetchApi({ url: 'polls', method: 'GET' });
-      polls.value = fresh;
+      polls.value = polls.value.map(p => {
+        if (p.id !== pollId) return p;
+        return {
+          ...p,
+          options: (p.options ?? []).filter(o => o.id !== optionId),
+        };
+      });
     } catch (err) {
       error.value = err;
     }
