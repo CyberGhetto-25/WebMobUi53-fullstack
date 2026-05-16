@@ -9,9 +9,14 @@ const props = defineProps({
 
 const emit = defineEmits(['saved', 'cancelled']);
 
-const { createPoll, updatePoll, error: storeError } = usePollStore();
+const { polls, createPoll, updatePoll, error: storeError } = usePollStore();
 
 const isEditMode = computed(() => props.poll !== null);
+
+const currentOptionsLength = computed(() => {
+  if (!isEditMode.value || !props.poll) return 0;
+  return polls.value.find(p => p.id === props.poll.id)?.options?.length ?? 0;
+});
 
 const title = ref(props.poll?.title ?? '');
 const question = ref(props.poll?.question ?? '');
@@ -95,7 +100,11 @@ async function handleSubmit() {
 
     <div class="section">
       <h3 class="section-title">Options de réponse</h3>
-      <PollOptionEditor v-if="isEditMode" :poll="poll" />
+      <PollOptionEditor
+        v-if="isEditMode"
+        :poll="poll"
+        :key="currentOptionsLength"
+      />
       <p v-else class="hint">Vous pourrez ajouter des options après avoir sauvegardé le sondage.</p>
     </div>
 

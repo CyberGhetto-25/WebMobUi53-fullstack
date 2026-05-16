@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, reactive, watchEffect } from 'vue';
+import { ref, reactive } from 'vue';
 import { usePollStore } from '@/stores/usePollStore';
 
 const props = defineProps({
@@ -8,22 +8,18 @@ const props = defineProps({
 
 const { addOption, updateOption, deleteOption, error: storeError } = usePollStore();
 
-const localLabels = reactive({});
-
-watchEffect(() => {
-  (props.poll.options ?? []).forEach(opt => {
-    if (!(opt.id in localLabels)) {
-      localLabels[opt.id] = opt.label;
-    }
-  });
-});
+// Source de vérité locale — mise à jour directement après chaque opération
+const localOptions = ref([...(props.poll.options ?? [])]);
+const localLabels = reactive(
+  Object.fromEntries((props.poll.options ?? []).map(o => [o.id, o.label]))
+);
 
 const newLabel = ref('');
 const loading = ref(false);
 const addError = ref(null);
 const optionErrors = reactive({});
 
-const showWarning = computed(() => (props.poll.options?.length ?? 0) < 2);
+const showWarning = ref(localOptions.value.length < 2);
 
 async function handleAdd() {
   if (!newLabel.value.trim()) return;
@@ -32,7 +28,10 @@ async function handleAdd() {
   const result = await addOption(props.poll.id, newLabel.value.trim());
   loading.value = false;
   if (result) {
+    localOptions.value.push(result);
+    localLabels[result.id] = result.label;
     newLabel.value = '';
+    showWarning.value = localOptions.value.length < 2;
   } else if (storeError.value?.status === 422) {
     addError.value = storeError.value.data?.errors?.label?.[0] ?? 'Erreur lors de l\'ajout.';
   } else if (storeError.value) {
@@ -41,13 +40,16 @@ async function handleAdd() {
 }
 
 async function handleUpdate(optionId) {
-  const original = props.poll.options.find(o => o.id === optionId)?.label;
+  const original = localOptions.value.find(o => o.id === optionId)?.label;
   if (localLabels[optionId] === original) return;
   loading.value = true;
   optionErrors[optionId] = null;
   const result = await updateOption(props.poll.id, optionId, localLabels[optionId]);
   loading.value = false;
-  if (!result && storeError.value) {
+  if (result) {
+    const index = localOptions.value.findIndex(o => o.id === optionId);
+    if (index !== -1) localOptions.value[index] = result;
+  } else if (storeError.value) {
     optionErrors[optionId] = storeError.value.data?.errors?.label?.[0] ?? 'Erreur lors de la mise à jour.';
   }
 }
@@ -57,8 +59,12 @@ async function handleDelete(optionId) {
   loading.value = true;
   await deleteOption(props.poll.id, optionId);
   loading.value = false;
-  delete localLabels[optionId];
-  delete optionErrors[optionId];
+  if (!storeError.value) {
+    localOptions.value = localOptions.value.filter(o => o.id !== optionId);
+    delete localLabels[optionId];
+    delete optionErrors[optionId];
+    showWarning.value = localOptions.value.length < 2;
+  }
 }
 </script>
 
@@ -68,12 +74,12 @@ async function handleDelete(optionId) {
       Recommandé : au moins 2 options de réponse.
     </p>
 
-    <p v-if="(poll.options ?? []).length === 0" class="empty">
+    <p v-if="localOptions.length === 0" class="empty">
       Aucune option pour l'instant.
     </p>
 
     <ul v-else>
-      <li v-for="option in poll.options" :key="option.id" class="option-row">
+      <li v-for="option in localOptions" :key="option.id" class="option-row">
         <input v-model="localLabels[option.id]" type="text" class="option-input" />
         <button class="btn-save" :disabled="loading" @click="handleUpdate(option.id)">Sauvegarder</button>
         <button class="btn-delete" :disabled="loading" @click="handleDelete(option.id)">Supprimer</button>

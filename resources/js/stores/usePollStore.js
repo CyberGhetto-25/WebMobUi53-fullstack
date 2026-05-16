@@ -24,17 +24,22 @@ export function usePollStore() {
   }
 
   async function updatePoll(id, data) {
-    error.value = null;
-    try {
-      const result = await fetchApi({ url: 'polls/' + id, method: 'PATCH', data });
-      const index = polls.value.findIndex(p => p.id === id);
-      if (index !== -1) polls.value[index] = result;
-      return result;
-    } catch (err) {
-      error.value = err;
-      return null;
+  error.value = null;
+  try {
+    const result = await fetchApi({ url: 'polls/' + id, method: 'PATCH', data });
+    const poll = polls.value.find(p => p.id === id);
+    if (poll) {
+      // Met à jour les champs sans remplacer l'objet proxy ni toucher aux options
+      Object.keys(result).forEach(key => {
+        if (key !== 'options') poll[key] = result[key];
+      });
     }
+    return result;
+  } catch (err) {
+    error.value = err;
+    return null;
   }
+}
 
   async function deletePoll(id) {
     error.value = null;
@@ -82,10 +87,8 @@ export function usePollStore() {
     error.value = null;
     try {
       await fetchApi({ url: 'polls/' + pollId + '/options/' + optionId, method: 'DELETE' });
-      const poll = polls.value.find(p => p.id === pollId);
-      if (poll && poll.options) {
-        poll.options = poll.options.filter(o => o.id !== optionId);
-      }
+      const fresh = await fetchApi({ url: 'polls', method: 'GET' });
+      polls.value = fresh;
     } catch (err) {
       error.value = err;
     }
