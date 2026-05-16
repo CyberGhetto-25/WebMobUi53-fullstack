@@ -1,20 +1,13 @@
-# HEIG-VD DévProdMéd Course - Mini-projet
+# WebMobUi53 — Application de sondage
 
-Ce dépôt contient le mini-projet à réaliser dans le cadre du cours
-_"[Développement de produit média (DévProdMéd)](https://github.com/heig-vd-devprodmed-course/heig-vd-devprodmed-course)"_
-enseigné à la
+Application de sondage fullstack développée dans le cadre du cours WebMobUI à la
 [Haute Ecole d'Ingénierie et de Gestion du Canton de Vaud (HEIG-VD)](https://heig-vd.ch),
-Suisse.
-
-## Objectif du mini-projet
-
-L'objectif de ce mini-projet est de créer un réseau social simple en utilisant le
-framework [Laravel](https://laravel.com/). Ce projet permettra de mettre en pratique les concepts
-appris dans le cours.
+Suisse. Permet de créer des sondages, de les partager via un lien token, de voter
+et de consulter les résultats en temps réel.
 
 ## Pré-requis
 
-Afin de lancer ce projet, une stack compatible avec Laravel, est requise.
+Afin de lancer ce projet, une stack compatible avec Laravel est requise.
 
 Voici les pré-requis nécessaires :
 
@@ -24,19 +17,18 @@ Voici les pré-requis nécessaires :
 - Une base de données (MySQL, PostgreSQL, SQLite, etc.).
 - Un serveur web (Apache, Nginx, etc.).
 
-[Laravel Herd](https://helm.sh/docs/charts/laravel/) est recommandé pour une installation facile de Laravel et de ses dépendances.
+[Laravel Herd](https://herd.laravel.com/) est recommandé pour une installation facile de Laravel et de ses dépendances.
 
 ## Développement local
 
-Pour développer et tester le mini-projet en local, voici les étapes à suivre :
+Pour développer et tester le projet en local, voici les étapes à suivre :
 
-1. Forker ce dépôt
+1. Forker ce dépôt.
 
-2. Installer les dépendances avec npm et Composer :
+2. Installer les dépendances :
 
     ```bash
-    npm install && npm run build
-
+    npm install
     composer install
     ```
 
@@ -48,30 +40,51 @@ Pour développer et tester le mini-projet en local, voici les étapes à suivre 
     php artisan key:generate
     ```
 
-6. Créer le lien symbolique pour les fichiers téléversés :
+6. Créer la base de données et exécuter les migrations avec les seeders :
 
     ```bash
-    php artisan storage:link
+    php artisan migrate --seed
     ```
 
-7. Créer la base de données et exécuter les migrations :
+    S'il est nécessaire de réinitialiser la base de données, utiliser la commande `php artisan migrate:fresh --seed`.
+
+7. Démarrer les serveurs de développement :
 
     ```bash
-    php artisan migrate
-    ```
+    # Terminal 1 — backend
+    php artisan serve
 
-    S'il est nécessaire de réinitialiser la base de données, utiliser la commande `php artisan migrate:reset` puis `php artisan migrate` à nouveau.
-
-8. Optionnel : en mode développement, il est possible de peupler la base de données avec des données fictives :
-
-    ```bash
-    php artisan db:seed
-    ```
-
-9. Démarrer le serveur de développement Laravel :
-
-    ```bash
-    composer run dev
+    # Terminal 2 — frontend
+    npm run dev
     ```
 
 L'application sera accessible à l'adresse <http://localhost:8000>.
+
+## Compte de test
+
+| Champ | Valeur |
+|---|---|
+| Email | john.doe@example.com |
+| Mot de passe | password |
+
+## Fonctionnalités
+
+- Dashboard des sondages de l'utilisateur connecté
+- Création, édition et suppression d'un sondage
+- Gestion des options de réponse (ajout, modification, suppression)
+- Paramètres : brouillon, lancement immédiat, choix multiple, résultats publics, durée
+- Lien de partage via token (bouton "Copier le lien" dans le dashboard)
+- Page de vote accessible via token dans l'URL
+- Vote authentifié avec unicité garantie (frontend + backend)
+- Accès conditionnel : résultats visibles si publics, message de connexion pour les non-authentifiés
+- Résultats en temps réel via polling toutes les 5 secondes
+- Graphique en barres (Chart.js) des résultats
+
+## Architecture et choix techniques
+
+- **Backend** : Laravel 12, SQLite, Laravel Sanctum (session-based)
+- **Frontend** : Vue.js 3.4 (Composition API), Vite, Chart.js
+- **Store** : Pinia via `usePollStore` — état global des sondages
+- **Composables** : `useFetchApi` (requêtes HTTP), `usePolling` (polling toutes les 5s)
+- **Intégration Blade → Vue** : données passées via `data-*` attributes et `JSON.parse`
+- **GitHub Flow** : une branche par issue, Pull Request vers `main`
