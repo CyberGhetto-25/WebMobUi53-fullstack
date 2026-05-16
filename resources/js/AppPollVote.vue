@@ -26,6 +26,7 @@ const loading = ref(false);
 const apiError = ref(null);
 const voteSuccess = ref(false);
 const ready = ref(false);
+const isEditing = ref(false);
 
 onMounted(async () => {
   try {
@@ -50,6 +51,12 @@ const isExpired = computed(() => {
 
 const hasVoted = computed(() => localPoll.value.user_has_voted || voteSuccess.value);
 
+const canEdit = computed(() =>
+  hasVoted.value &&
+  localPoll.value.allow_vote_change &&
+  !isExpired.value
+);
+
 const canVote = computed(() =>
   localPoll.value.allow_multiple_choices
     ? selectedOptionIds.value.length > 0
@@ -68,6 +75,15 @@ const totalVotes = computed(() =>
 function optionProgress(option) {
   if (totalVotes.value === 0) return 0;
   return Math.round(((option.votes_count ?? 0) / totalVotes.value) * 100);
+}
+
+function startEdit() {
+  if (localPoll.value.allow_multiple_choices) {
+    selectedOptionIds.value = [...(localPoll.value.user_option_ids ?? [])];
+  } else {
+    selectedOptionId.value = localPoll.value.user_option_ids?.[0] ?? null;
+  }
+  isEditing.value = true;
 }
 
 const chartData = computed(() => ({
@@ -111,6 +127,7 @@ async function handleVote() {
     });
     localPoll.value = result;
     voteSuccess.value = true;
+    isEditing.value = false;
   } catch (err) {
     if (err.status === 403) {
       apiError.value = 'Ce sondage est terminé.';
@@ -138,13 +155,54 @@ async function handleVote() {
       <h1 class="poll-title">{{ localPoll.title || localPoll.question }}</h1>
       <p v-if="localPoll.title" class="poll-question">{{ localPoll.question }}</p>
 
+      <!-- Sondage expiré -->
       <p v-if="isExpired" class="status-msg status-expired">
         Ce sondage est terminé.
       </p>
-      <p v-else-if="hasVoted" class="status-msg status-voted">
-        {{ voteSuccess ? 'Merci pour votre vote !' : 'Vous avez déjà voté.' }}
-      </p>
 
+      <!-- Déjà voté, pas en mode édition -->
+      <template v-else-if="hasVoted && !isEditing">
+        <p class="status-msg status-voted">
+          {{ voteSuccess ? 'Merci pour votre vote !' : 'Vous avez déjà voté.' }}
+        </p>
+        <button v-if="canEdit" @click="startEdit" class="btn-edit-vote">
+          Modifier mon vote
+        </button>
+      </template>
+
+      <!-- Mode édition -->
+      <template v-else-if="isEditing">
+        <p class="hint">Vous modifiez votre vote.</p>
+        <ul class="options-list">
+          <li v-for="option in (localPoll.options ?? [])" :key="option.id" class="option-item">
+            <label class="option-label">
+              <input
+                v-if="localPoll.allow_multiple_choices"
+                type="checkbox"
+                :value="option.id"
+                v-model="selectedOptionIds"
+              />
+              <input
+                v-else
+                type="radio"
+                name="vote-option"
+                :value="option.id"
+                v-model="selectedOptionId"
+              />
+              <span>{{ option.label }}</span>
+            </label>
+          </li>
+        </ul>
+        <p v-if="apiError" class="error">{{ apiError }}</p>
+        <div class="edit-actions">
+          <button type="button" class="btn-cancel" @click="isEditing = false">Annuler</button>
+          <button class="btn-vote" :disabled="loading || !canVote" @click="handleVote">
+            {{ loading ? 'Envoi…' : 'Confirmer' }}
+          </button>
+        </div>
+      </template>
+
+      <!-- Pas encore voté -->
       <div v-else>
         <div v-if="!isAuthenticated" class="auth-prompt">
           <p>Connectez-vous pour participer à ce sondage.</p>
@@ -183,6 +241,7 @@ async function handleVote() {
         </div>
       </div>
 
+      <!-- Résultats -->
       <div v-if="showResults" class="results">
         <h3>Résultats</h3>
         <Bar :data="chartData" :options="chartOptions" />
@@ -283,6 +342,42 @@ input[type="checkbox"] {
 .btn-vote:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+.btn-edit-vote {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1.25rem;
+  background: #4a1d96;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.btn-edit-vote:hover {
+  background: #3b0764;
+}
+.hint {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+.edit-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.btn-cancel {
+  flex: 1;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
 }
 .results {
   margin-top: 2rem;

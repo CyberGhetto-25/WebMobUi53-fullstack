@@ -22,6 +22,7 @@ const title = ref(props.poll?.title ?? '');
 const question = ref(props.poll?.question ?? '');
 const launchImmediately = ref(props.poll ? !props.poll.is_draft : false);
 const allowMultipleChoices = ref(props.poll?.allow_multiple_choices ?? false);
+const allowVoteChange = ref(props.poll?.allow_vote_change ?? false);
 const resultsPublic = ref(props.poll?.results_public ?? false);
 const duration = ref(null);
 
@@ -37,6 +38,7 @@ async function handleSubmit() {
     question: question.value,
     is_draft: !launchImmediately.value,
     allow_multiple_choices: allowMultipleChoices.value,
+    allow_vote_change: allowVoteChange.value,
     results_public: resultsPublic.value,
     duration: duration.value !== null && duration.value !== '' ? Number(duration.value) : null,
   };
@@ -88,6 +90,13 @@ async function handleSubmit() {
         Autoriser plusieurs réponses
       </label>
       <span v-if="fieldErrors.allow_multiple_choices" class="field-error">{{ fieldErrors.allow_multiple_choices[0] }}</span>
+    </div>
+
+    <div class="field field--checkbox">
+      <label class="text-gray-700 dark:text-gray-300">
+        <input v-model="allowVoteChange" type="checkbox" />
+        Autoriser la modification du vote
+      </label>
     </div>
 
     <div class="field field--checkbox">
