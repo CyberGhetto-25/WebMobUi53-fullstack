@@ -27,7 +27,6 @@
   }
 
   async function delPoll(id) {
-    console.log('delete Poll ID:', id);
     await deletePoll(id);
   }
 
