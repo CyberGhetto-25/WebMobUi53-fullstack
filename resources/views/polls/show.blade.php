@@ -10,5 +10,7 @@
     <div
         id="poll-vote-app"
         data-poll='@json($poll)'
+        data-is-authenticated='@json($is_authenticated)'
+        data-login-url="{{ $login_url }}"
     ></div>
 </x-vue-app-layout>
