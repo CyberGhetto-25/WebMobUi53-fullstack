@@ -6,6 +6,7 @@ use App\Http\Controllers\MyProfileController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PollDashboardController;
 use App\Http\Controllers\PollViewController;
+use App\Http\Controllers\PublicPollController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TokenController;
 use App\Models\Post;
@@ -41,4 +42,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 });
 
+Route::get('/polls', [PublicPollController::class, 'index']);
 Route::get('/polls/{token}', [PollViewController::class, 'show']);

@@ -7,6 +7,10 @@
         {{ $poll->title ?? $poll->question }}
     </x-slot>
 
+    <div style="padding: 1rem;">
+      <a href="/polls" style="color: #3490dc; text-decoration: none; font-size: 0.9rem;">← Retour aux sondages</a>
+    </div>
+
     <div
         id="poll-vote-app"
         data-poll='@json($poll)'
