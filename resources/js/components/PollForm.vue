@@ -58,26 +58,32 @@ async function handleSubmit() {
 <template>
   <form @submit.prevent="handleSubmit">
     <div class="field">
-      <label for="title">Titre</label>
-      <input id="title" v-model="title" type="text" required />
+      <label for="title" class="text-gray-700 dark:text-gray-300">Titre</label>
+      <input
+        id="title" v-model="title" type="text" required
+        class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+      />
       <span v-if="fieldErrors.title" class="field-error">{{ fieldErrors.title[0] }}</span>
     </div>
 
     <div class="field">
-      <label for="question">Question</label>
-      <textarea id="question" v-model="question" required></textarea>
+      <label for="question" class="text-gray-700 dark:text-gray-300">Question</label>
+      <textarea
+        id="question" v-model="question" required
+        class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+      ></textarea>
       <span v-if="fieldErrors.question" class="field-error">{{ fieldErrors.question[0] }}</span>
     </div>
 
     <div class="field field--checkbox">
-      <label>
+      <label class="text-gray-700 dark:text-gray-300">
         <input v-model="launchImmediately" type="checkbox" />
         Lancer immédiatement
       </label>
     </div>
 
     <div class="field field--checkbox">
-      <label>
+      <label class="text-gray-700 dark:text-gray-300">
         <input v-model="allowMultipleChoices" type="checkbox" />
         Autoriser plusieurs réponses
       </label>
@@ -85,7 +91,7 @@ async function handleSubmit() {
     </div>
 
     <div class="field field--checkbox">
-      <label>
+      <label class="text-gray-700 dark:text-gray-300">
         <input v-model="resultsPublic" type="checkbox" />
         Résultats publics
       </label>
@@ -93,8 +99,11 @@ async function handleSubmit() {
     </div>
 
     <div class="field">
-      <label for="duration">Durée (minutes)</label>
-      <input id="duration" v-model="duration" type="number" min="1" />
+      <label for="duration" class="text-gray-700 dark:text-gray-300">Durée (minutes)</label>
+      <input
+        id="duration" v-model="duration" type="number" min="1"
+        class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+      />
       <span v-if="fieldErrors.duration" class="field-error">{{ fieldErrors.duration[0] }}</span>
     </div>
 
@@ -147,7 +156,7 @@ async function handleSubmit() {
 input[type="text"],
 input[type="number"],
 textarea {
-  border: 1px solid #ccc;
+  border: 1px solid;
   border-radius: 0.25rem;
   padding: 0.4rem 0.5rem;
 }
@@ -181,8 +190,11 @@ button {
   cursor: pointer;
 }
 button[type="submit"] {
-  background-color: #3490dc;
+  background-color: #4a1d96;
   color: white;
+}
+button[type="submit"]:not(:disabled):hover {
+  background-color: #3b0764;
 }
 button[type="submit"]:disabled {
   opacity: 0.6;

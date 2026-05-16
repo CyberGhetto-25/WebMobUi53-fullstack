@@ -37,6 +37,12 @@
                         class="block bg-teal-700 dark:bg-purple-900 px-3 py-1 rounded-md hover:bg-teal-800 dark:hover:bg-purple-800">
                         Sondages
                     </a>
+                    @auth
+                        <a href="{{ url('/polls/dashboard') }}"
+                            class="block bg-teal-700 dark:bg-purple-900 px-3 py-1 rounded-md hover:bg-teal-800 dark:hover:bg-purple-800">
+                            Dashboard
+                        </a>
+                    @endauth
                 </div>
 
                 @auth

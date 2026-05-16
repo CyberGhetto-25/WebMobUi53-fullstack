@@ -75,8 +75,8 @@ const chartData = computed(() => ({
   datasets: [{
     label: 'Votes',
     data: (localPoll.value.options ?? []).map(o => o.votes_count ?? 0),
-    backgroundColor: 'rgba(52, 144, 220, 0.7)',
-    borderColor: 'rgba(52, 144, 220, 1)',
+    backgroundColor: 'rgba(124, 58, 237, 0.7)',
+    borderColor: 'rgba(124, 58, 237, 1)',
     borderWidth: 1,
   }],
 }));
@@ -201,7 +201,7 @@ async function handleVote() {
 .poll-vote {
   max-width: 600px;
   margin: 2rem auto;
-  padding: 1.5rem;
+  padding: 0 1rem;
 }
 .loading {
   color: #6b7280;
@@ -210,9 +210,11 @@ async function handleVote() {
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
+  color: inherit;
 }
 .poll-question {
-  color: #374151;
+  color: inherit;
+  opacity: 0.75;
   margin-bottom: 1.5rem;
 }
 .status-msg {
@@ -243,14 +245,14 @@ async function handleVote() {
 .option-label {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
   cursor: pointer;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  color: inherit;
 }
 .option-label:hover {
-  background-color: #f9fafb;
+  background: rgba(255, 255, 255, 0.08);
 }
 .error {
   color: #e3342f;
@@ -258,13 +260,16 @@ async function handleVote() {
   margin-bottom: 0.75rem;
 }
 .btn-vote {
-  background-color: #3490dc;
+  background-color: #4a1d96;
   color: white;
   padding: 0.5rem 1.25rem;
   border: none;
   border-radius: 0.375rem;
   cursor: pointer;
   font-size: 1rem;
+}
+.btn-vote:not(:disabled):hover {
+  background-color: #3b0764;
 }
 .btn-vote:disabled {
   opacity: 0.6;
@@ -304,12 +309,12 @@ async function handleVote() {
 .btn-login {
   display: inline-block;
   padding: 0.5rem 1.25rem;
-  background-color: #3490dc;
+  background-color: #4a1d96;
   color: white;
   border-radius: 0.25rem;
   text-decoration: none;
 }
 .btn-login:hover {
-  background-color: #2779bd;
+  background-color: #3b0764;
 }
 </style>

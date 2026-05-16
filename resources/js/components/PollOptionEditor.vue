@@ -156,11 +156,11 @@ button:disabled {
   cursor: not-allowed;
 }
 .btn-save {
-  background-color: #3490dc;
+  background-color: #4a1d96;
   color: white;
 }
 .btn-add {
-  background-color: #38a169;
+  background-color: #0f766e;
   color: white;
 }
 .btn-delete {

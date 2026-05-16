@@ -1,5 +1,6 @@
 <script setup>
   import { ref, computed } from 'vue';
+  import { PlusCircle } from 'lucide-vue-next';
   import PollTable from './components/PollTable.vue';
   import PollForm from './components/PollForm.vue';
   import { usePollStore } from '@/stores/usePollStore';
@@ -34,11 +35,16 @@
 </script>
 
 <template>
-  <div>
-    <div v-if="view === 'list'">
-      <button @click="view = 'create'">Nouveau sondage</button>
-      <PollTable @edit="onEdit" />
+  <div class="dashboard">
+    <div class="dashboard-header">
+      <a href="/" class="btn-home">← Accueil</a>
+      <h1>Mes sondages</h1>
+      <button v-if="view === 'list'" class="btn-new" @click="view = 'create'">
+        <PlusCircle :size="16" /> Nouveau sondage
+      </button>
     </div>
+
+    <PollTable v-if="view === 'list'" @edit="onEdit" />
 
     <PollForm
       v-else-if="view === 'create'"
@@ -54,3 +60,46 @@
     />
   </div>
 </template>
+
+<style scoped>
+.dashboard {
+  width: 100%;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.dashboard-header h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  flex: 1;
+}
+.btn-home {
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.btn-home:hover {
+  color: #a78bfa;
+}
+.btn-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  background: #4a1d96;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.btn-new:hover {
+  background: #3b0764;
+}
+</style>
