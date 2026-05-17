@@ -51,11 +51,7 @@ Pour développer et tester le projet en local, voici les étapes à suivre :
 7. Démarrer les serveurs de développement :
 
     ```bash
-    # Terminal 1 — backend
-    php artisan serve
-
-    # Terminal 2 — frontend
-    npm run dev
+    composer run dev
     ```
 
 L'application sera accessible à l'adresse <http://localhost:8000>.
